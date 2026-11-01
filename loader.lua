@@ -1,5 +1,5 @@
 --// ╔══════════════════════════════════════════════════════════════╗
---// ║  Fust Survival / ProjectX - Loader v3.1 (Subfolders Fix)     ║
+--// ║  Fust Survival / ProjectX - Clean Loader                     ║
 --// ╚══════════════════════════════════════════════════════════════╝
 
 local BASE_URL = "https://raw.githubusercontent.com/rshonchar9292-ai/trusthubfu/main/"
@@ -34,28 +34,20 @@ local UI = loadModule("ui")
 if not UI then logErr("❌ UI НЕ ЗАВАНТАЖЕНО") return end
 
 local Features = {
-    -- Базові модулі (в корені папки features)
-    Movement  = loadModule("features.movement"),
-    Fling     = loadModule("features.fling"),
-    Animation = loadModule("features.animation"),
-    Shahed    = loadModule("features.shahed"),
-    Rocket    = loadModule("features.rocket"),
-    Emotes    = loadModule("features.emotes"),
-
-    -- Нові модулі (у підпапках)
     Combat = {
-        Aimbot = loadModule("features.combat.aimbot"), -- Звертаємось до папки combat
+        Aimbot = loadModule("features.combat.aimbot"),
     },
     Visuals = {
-        ESP = loadModule("features.visuals.esp"),      -- Звертаємось до папки visuals
+        ESP = loadModule("features.visuals.esp"),
         ItemsESP = loadModule("features.visuals.items_esp"),
     },
+    AntiBan = loadModule("features.anti_ban"), -- Якщо ти його створив
 }
 
 log("─────────────────────────────")
-log("Combat > Aimbot: "  .. type(Features.Combat.Aimbot))
-log("Visuals > ESP:   "  .. type(Features.Visuals.ESP))
-log("Visuals > Items: "  .. type(Features.Visuals.ItemsESP))
+log("Aimbot: "  .. type(Features.Combat.Aimbot))
+log("ESP: "     .. type(Features.Visuals.ESP))
+log("AntiBan: " .. type(Features.AntiBan))
 log("─────────────────────────────")
 
 _G.ProjectXFeatures = Features
