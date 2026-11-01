@@ -1,10 +1,9 @@
 --// ╔══════════════════════════════════════════════════════════════╗
---// ║  ProjectX / Fust Survival - Loader v2.0                      ║
+--// ║  Fust Survival / ProjectX - Loader v3.0                      ║
 --// ╚══════════════════════════════════════════════════════════════╝
 
---// УВАГА: Перевір, щоб це посилання вело на твій репозиторій!
---// Якщо ти створив новий репо (наприклад, trusthubfu), зміни його тут:
-local BASE_URL = "https://raw.githubusercontent.com/rshonchar9292-ai/projectx/main/"
+--// Перевір, що це посилання веде на твій новий репозиторій!
+local BASE_URL = "https://raw.githubusercontent.com/rshonchar9292-ai/trusthubfu/main/"
 
 local function log(msg) print("[ProjectX] " .. tostring(msg)) end
 local function logErr(msg) warn("[ProjectX ERROR] " .. tostring(msg)) end
@@ -21,7 +20,7 @@ local function loadModule(path)
 
     local ok, code = pcall(function() return game:HttpGet(url) end)
     if not ok then 
-        logErr("HTTP помилка: " .. urlPath)
+        logErr("HTTP помилка (перевір інтернет або посилання): " .. urlPath)
         return nil 
     end
     
@@ -31,14 +30,14 @@ local function loadModule(path)
     end
     
     if code:find("404: Not Found") then 
-        logErr("404 Not Found: " .. urlPath)
+        logErr("404 Not Found: " .. urlPath .. " (Ти не залив цей файл на GitHub!)")
         return nil 
     end
 
     -- Компіляція
     local fn, err = loadstring(code)
     if not fn then 
-        logErr("Помилка компіляції: " .. urlPath .. "\n" .. tostring(err))
+        logErr("Помилка компіляції (синтаксис): " .. urlPath .. "\n" .. tostring(err))
         return nil 
     end
 
@@ -59,11 +58,11 @@ end
 --// ============================================================
 --// 1. ЗАВАНТАЖЕННЯ UI
 --// ============================================================
-log("=== СТАРТ ===")
+log("=== СТАРТ ЗАВАНТАЖЕННЯ ===")
 
 local UI = loadModule("ui")
 if not UI then 
-    logErr("❌ Критична помилка: UI не завантажено!")
+    logErr("❌ Критична помилка: UI не завантажено! Меню не запуститься.")
     return 
 end
 log("✅ UI успішно завантажено")
@@ -72,31 +71,35 @@ log("✅ UI успішно завантажено")
 --// 2. ЗАВАНТАЖЕННЯ МОДУЛІВ (Features)
 --// ============================================================
 local Features = {
-    -- Базові функції
+    -- Бойові модулі (в папці combat)
+    Combat = {
+        Aimbot = loadModule("features.combat.aimbot"),
+    },
+    
+    -- Візуальні модулі (в папці visuals)
+    Visuals = {
+        ESP = loadModule("features.visuals.esp"),
+        ItemsESP = loadModule("features.visuals.items_esp"),
+    },
+
+    -- Старі модулі (якщо вони ще лежать у тебе в корені папки features)
     Movement  = loadModule("features.movement"),
     Fling     = loadModule("features.fling"),
     Animation = loadModule("features.animation"),
-    
-    -- Функції з попередніх етапів
     Shahed    = loadModule("features.shahed"),
     Rocket    = loadModule("features.rocket"),
     Emotes    = loadModule("features.emotes"),
-    
-    -- Нові функції для Fust Survival
-    Combat    = loadModule("features.combat"),   -- Aimbot
-    Visuals   = loadModule("features.visuals"),  -- ESP, Tracers
 }
 
 --// ============================================================
---// 3. ПЕРЕВІРКА СТАТУСУ МОДУЛІВ
+--// 3. ПЕРЕВІРКА СТАТУСУ МОДУЛІВ (Виведе в F9)
 --// ============================================================
 log("─────────────────────────────")
-log("Movement: "  .. type(Features.Movement))
-log("Combat: "    .. type(Features.Combat))
-log("Visuals: "   .. type(Features.Visuals))
-log("Emotes: "    .. type(Features.Emotes))
-log("Shahed: "    .. type(Features.Shahed))
-log("Rocket: "    .. type(Features.Rocket))
+log("Combat > Aimbot:  " .. type(Features.Combat.Aimbot))
+log("Visuals > ESP:    " .. type(Features.Visuals.ESP))
+log("Visuals > Items:  " .. type(Features.Visuals.ItemsESP))
+log("Movement:         " .. type(Features.Movement))
+log("Emotes:           " .. type(Features.Emotes))
 log("─────────────────────────────")
 
 _G.ProjectXFeatures = Features
