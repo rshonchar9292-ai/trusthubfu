@@ -1,6 +1,10 @@
 --// ╔══════════════════════════════════════════════════════════════╗
---// ║  Fust Survival / ProjectX - Clean Loader                     ║
+--// ║  Fust Survival / ProjectX - LOADER.LUA (Clean)               ║
 --// ╚══════════════════════════════════════════════════════════════╝
+
+print("========================================")
+print(" [ProjectX] LOADER.LUA (CLEAN) ЗАПУЩЕНО ")
+print("========================================")
 
 local BASE_URL = "https://raw.githubusercontent.com/rshonchar9292-ai/trusthubfu/main/"
 
@@ -10,7 +14,6 @@ local function logErr(msg) warn("[ProjectX ERROR] " .. tostring(msg)) end
 local function loadModule(path)
     local urlPath = path:gsub("%.", "/")
     local url = BASE_URL .. urlPath .. ".lua?t=" .. tostring(os.time())
-
     log("⏳ Завантажую: " .. urlPath)
 
     local ok, code = pcall(function() return game:HttpGet(url) end)
@@ -28,8 +31,6 @@ local function loadModule(path)
     return result
 end
 
-log("=== СТАРТ ===")
-
 local UI = loadModule("ui")
 if not UI then logErr("❌ UI НЕ ЗАВАНТАЖЕНО") return end
 
@@ -41,7 +42,7 @@ local Features = {
         ESP = loadModule("features.visuals.esp"),
         ItemsESP = loadModule("features.visuals.items_esp"),
     },
-    AntiBan = loadModule("features.anti_ban"), -- Якщо ти його створив
+    AntiBan = loadModule("features.anti_ban"),
 }
 
 log("─────────────────────────────")
