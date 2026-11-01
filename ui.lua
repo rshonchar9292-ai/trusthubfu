@@ -1,5 +1,5 @@
 --// ╔══════════════════════════════════════════════════════════════╗
---// ║  TrustFU — Fust Survival UI                                  ║
+--// ║  TrustFU — Fust Survival UI (Draggable Button)               ║
 --// ╚══════════════════════════════════════════════════════════════╝
 
 local TweenService = game:GetService("TweenService")
@@ -152,10 +152,47 @@ end
 function UI:init(Features)
     local ScreenGui = new("ScreenGui", {Name = "TrustFUGUI", ResetOnSpawn = false, IgnoreGuiInset = true, Parent = LocalPlayer:WaitForChild("PlayerGui")})
     
+    -- Кнопка відкриття меню (тепер її можна перетягувати)
     local Float = new("TextButton", {Size = UDim2.new(0, 50, 0, 50), Position = UDim2.new(0, 20, 0.5, -25), BackgroundColor3 = Theme.Accent, Text = "X", TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, TextSize = 20}, ScreenGui)
     corner(Float, 25)
     stroke(Float, Color3.new(1,1,1), 2)
     
+    -- Логіка перетягування кнопки
+    local dragging, dragInput, dragStart, startPos, moved = false, nil, nil, nil, false
+
+    Float.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            moved = false
+            dragStart = input.Position
+            startPos = Float.Position
+            
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+
+    Float.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            local delta = input.Position - dragStart
+            -- Якщо миша зсунулась більше ніж на 3 пікселі, вважаємо це перетягуванням, а не кліком
+            if math.abs(delta.X) > 3 or math.abs(delta.Y) > 3 then
+                moved = true
+            end
+            Float.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+    
+    -- Головне вікно
     local Main = new("Frame", {Size = UDim2.new(0, 0, 0, 0), Position = UDim2.new(0.5, 0, 0.5, 0), AnchorPoint = Vector2.new(0.5, 0.5), BackgroundColor3 = Theme.Bg, Visible = false}, ScreenGui)
     corner(Main, 14)
     stroke(Main, Theme.Line, 2)
@@ -244,7 +281,7 @@ function UI:init(Features)
         end)
     end)
 
-    -- TOGGLE
+    -- Логіка відкриття/закриття
     local isOpen = false
     local function toggleUI()
         isOpen = not isOpen
@@ -258,9 +295,14 @@ function UI:init(Features)
         end
     end
 
-    Float.MouseButton1Click:Connect(toggleUI)
+    -- Викликаємо toggleUI тільки якщо кнопку не перетягували (moved == false)
+    Float.MouseButton1Click:Connect(function()
+        if not moved then
+            toggleUI()
+        end
+    end)
     
-    -- ВИПРАВЛЕНО: ігноруємо gpe (gameProcessedEvent), щоб F4 працював завжди
+    -- Відкриття на F4
     UserInputService.InputBegan:Connect(function(input, gpe)
         if input.KeyCode == Enum.KeyCode.F4 then 
             toggleUI() 
